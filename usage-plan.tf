@@ -1,4 +1,5 @@
 resource "aws_api_gateway_usage_plan" "default" {
+  count = length(var.stage) > 0 && var.create_keys == true ? 1 : 0
   name         = "${var.name}-plan"
   description  = "${var.name}-plan"
 
@@ -10,20 +11,27 @@ resource "aws_api_gateway_usage_plan" "default" {
       }
   }
   
+  dynamic "quota_settings" {
+    for_each = var.quota_settings
+    content {
+      limit  = quota_settings.value.limit
+      offset = quota_settings.value.offset
+      period = quota_settings.value.period
+    }
+  }
+
+  dynamic "throttle_settings" {
+    for_each = var.quota_settings
+    content {
+      burst_limit = throttle_settings.value.burst_limit
+      rate_limit  = throttle_settings.value.rate_limit
+    }
+  }
+  
   tags = merge(
       var.tags,
       {
           "Name" = "${var.name}-plan"
       }
   )
-#   quota_settings {
-#     limit  = 20
-#     offset = 2
-#     period = "WEEK"
-#   }
-
-#   throttle_settings {
-#     burst_limit = 5
-#     rate_limit  = 10
-#   }
 }

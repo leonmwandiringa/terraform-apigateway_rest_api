@@ -104,32 +104,32 @@ variable "access_log_format" {
   EOF
 }
 
-# See https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-resource-policies.html for additional
-# information on how to configure resource policies.
-#
-# Example:
-# {
-#    "Version": "2012-10-17",
-#    "Statement": [
-#        {
-#            "Effect": "Allow",
-#            "Principal": "*",
-#            "Action": "execute-api:Invoke",
-#            "Resource": "arn:aws:execute-api:us-east-1:000000000000:*"
-#        },
-#        {
-#            "Effect": "Deny",
-#            "Principal": "*",
-#            "Action": "execute-api:Invoke",
-#            "Resource": "arn:aws:execute-api:region:account-id:*",
-#            "Condition": {
-#                "NotIpAddress": {
-#                    "aws:SourceIp": "123.4.5.6/24"
-#                }
-#            }
-#        }
-#    ]
-#}
+variable "private_policy" {
+  default = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "*"
+      },
+      "Action": "execute-api:Invoke",
+      "Resource": "*"
+    },
+    {
+            "Effect": "Deny",
+            "Principal": "*",
+            "Action": "execute-api:Invoke",
+            "Resource": [
+                "*"
+            ]
+        }
+  ]
+}
+EOF
+}
+
 variable "rest_api_policy" {
   description = "The IAM policy document for the API."
   type        = string
@@ -140,4 +140,9 @@ variable "private_link_target_arns" {
   type        = list(string)
   description = "A list of target ARNs for VPC Private Link"
   default     = []
+}
+
+variable "create_keys" {
+  type = bool
+  default = false
 }
