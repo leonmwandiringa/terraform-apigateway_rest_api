@@ -12,7 +12,7 @@ resource "aws_api_gateway_usage_plan" "default" {
   }
   
   dynamic "quota_settings" {
-    for_each = var.quota_settings
+    for_each = length(var.quota_settings) > 0 ? var.quota_settings : []
     content {
       limit  = quota_settings.value.limit
       offset = quota_settings.value.offset
@@ -21,7 +21,7 @@ resource "aws_api_gateway_usage_plan" "default" {
   }
 
   dynamic "throttle_settings" {
-    for_each = var.quota_settings
+    for_each = length(var.throttle_settings) > 0 ? var.throttle_settings : []
     content {
       burst_limit = throttle_settings.value.burst_limit
       rate_limit  = throttle_settings.value.rate_limit

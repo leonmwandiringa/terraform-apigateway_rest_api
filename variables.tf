@@ -146,3 +146,20 @@ variable "create_keys" {
   type = bool
   default = false
 }
+
+variable "quota_settings" {
+  type = list(object({
+    limit = number
+    offset = number
+    period = number
+  }))
+  default = []
+}
+
+variable "throttle_settings" {
+  type = list(object({
+    burst_limit = number
+    rate_limit = number
+  }))
+  default = []
+}
