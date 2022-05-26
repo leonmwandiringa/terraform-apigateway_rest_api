@@ -1,5 +1,5 @@
 resource "aws_api_gateway_usage_plan" "default" {
-  count = length(var.stage) > 0 && var.create_keys == true ? 1 : 0
+  count = length(var.stages) > 0 && var.create_keys == true ? 1 : 0
   name         = "${var.name}-plan"
   description  = "${var.name}-plan"
 
