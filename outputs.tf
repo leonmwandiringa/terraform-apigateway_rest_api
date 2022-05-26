@@ -15,7 +15,7 @@ output "created_date" {
 
 output "api_key" {
   description = "The the REST API key"
-  value       = aws_api_gateway_api_key.default.value
+  value       = join("", aws_api_gateway_api_key.*.default.value)
   sensitive = true
 }
 
