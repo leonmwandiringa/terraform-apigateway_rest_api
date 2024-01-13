@@ -21,12 +21,12 @@ output "api_key" {
 
 output "authorizer_id" {
   description = "The the REST API authorizer ids"
-  value       = length(var.authorizers) > 0 ? aws_api_gateway_authorizer.default.*.id : ""
+  value       = length(var.authorizers) > 0 ? aws_api_gateway_authorizer.default.*.id : null
 }
 
 output "authorizer_arn" {
   description = "The the REST API authorizer arns"
-  value       = length(var.authorizers) > 0 ? aws_api_gateway_authorizer.default.*.arn : ""
+  value       = length(var.authorizers) > 0 ? aws_api_gateway_authorizer.default.*.arn : null
 }
 
 output "execution_arn" {
