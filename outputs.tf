@@ -19,6 +19,16 @@ output "api_key" {
   sensitive = true
 }
 
+output "authorizer_id" {
+  description = "The the REST API authorizer ids"
+  value       = length(var.authorizers) > 0 ? aws_api_gateway_authorizer.default.*.id : ""
+}
+
+output "authorizer_arn" {
+  description = "The the REST API authorizer arns"
+  value       = length(var.authorizers) > 0 ? aws_api_gateway_authorizer.default.*.arn : ""
+}
+
 output "execution_arn" {
   description = <<EOF
     The execution ARN part to be used in lambda_permission's source_arn when allowing API Gateway to invoke a Lambda 

@@ -22,8 +22,13 @@ variable "stages" {
   description = "stages list"
   default = []
 }
-
-
+variable "authorizers" {
+  type = list(object({
+    name = string
+    provider_arns = list(string)
+    type = string
+  }))
+}
 variable "vpc_endpoint_id" {
   type = string
   default = null
