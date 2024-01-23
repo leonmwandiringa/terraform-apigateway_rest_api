@@ -15,7 +15,7 @@ resource "aws_api_gateway_stage" "default" {
 
     content {
       destination_arn = var.log_group_arn
-      format          = replace(var.access_log_format, "\n", "")
+      format          = replace(var.access_log_format, " ", "")
     }
   }
 

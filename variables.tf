@@ -12,6 +12,18 @@ variable "name" {
   type = string
   description = "apigateway rest name"
 }
+
+variable "usage_plans" {
+  type = list(object({
+    name = string
+    stages = list(string)
+    usage_plan_burst_limit = number
+    usage_plan_rate_limit = number
+  }))
+  description = "gateway authorizer list"
+  default = []
+}
+
 variable "openapi_config" {
   description = "The OpenAPI specification for the API"
   type        = any
@@ -22,16 +34,24 @@ variable "stages" {
   description = "stages list"
   default = []
 }
-variable "authorizers" {
-  type = list(object({
-    name = string
-    provider_arns = list(string)
-    type = string
-  }))
-}
-variable "vpc_endpoint_id" {
+variable "resource_path_part" {
   type = string
-  default = null
+  default = "default"
+}
+
+variable "usage_plan_burst_limit" {
+  type = number
+  default = 5000
+}
+
+variable "usage_plan_rate_limit" {
+  type = number
+  default = 10000
+}
+
+variable "vpc_endpoint_id" {
+  type = list(string)
+  default = []
 }
 variable "endpoint_type" {
   type        = string
@@ -60,6 +80,15 @@ variable "cloudwatch_role_arn" {
   description = "role arn"
 }
 
+variable "api_key_required" {
+  type = bool
+  default = false
+}
+
+variable "method_authorization" {
+  type = string
+  default = "NONE"
+}
 variable "metrics_enabled" {
   description = "A flag to indicate whether to enable metrics collection."
   type        = bool
@@ -82,59 +111,35 @@ variable "xray_tracing_enabled" {
 variable "access_log_format" {
   description = "The format of the access log file."
   type        = string
-  default     = <<EOF
-  {
-	"requestTime": "$context.requestTime",
-	"requestId": "$context.requestId",
-	"httpMethod": "$context.httpMethod",
-	"path": "$context.path",
-	"resourcePath": "$context.resourcePath",
-	"status": $context.status,
-	"responseLatency": $context.responseLatency,
-  "xrayTraceId": "$context.xrayTraceId",
-  "integrationRequestId": "$context.integration.requestId",
-	"functionResponseStatus": "$context.integration.status",
-  "integrationLatency": "$context.integration.latency",
-	"integrationServiceStatus": "$context.integration.integrationStatus",
-  "authorizeResultStatus": "$context.authorize.status",
-	"authorizerServiceStatus": "$context.authorizer.status",
-	"authorizerLatency": "$context.authorizer.latency",
-	"authorizerRequestId": "$context.authorizer.requestId",
-  "ip": "$context.identity.sourceIp",
-	"userAgent": "$context.identity.userAgent",
-	"principalId": "$context.authorizer.principalId",
-	"cognitoUser": "$context.identity.cognitoIdentityId",
-  "user": "$context.identity.user"
-}
-  EOF
+  default     = "{\"requestTime\": \"$context.requestTime\",\"requestId\": \"$context.requestId\",\"httpMethod\": \"$context.httpMethod\",\"path\": \"$context.path\",\"resourcePath\": \"$context.resourcePath\",\"status\": $context.status,\"responseLatency\": $context.responseLatency,\"xrayTraceId\": \"$context.xrayTraceId\",\"integrationRequestId\": \"$context.integration.requestId\",\"functionResponseStatus\": \"$context.integration.status\",\"integrationLatency\": \"$context.integration.latency\",\"integrationServiceStatus\": \"$context.integration.integrationStatus\",\"authorizeResultStatus\": \"$context.authorize.status\",\"authorizerServiceStatus\": \"$context.authorizer.status\",\"authorizerLatency\": \"$context.authorizer.latency\",\"authorizerRequestId\": \"$context.authorizer.requestId\",\"ip\": \"$context.identity.sourceIp\",\"userAgent\": \"$context.identity.userAgent\",\"principalId\": \"$context.authorizer.principalId\",\"cognitoUser\": \"$context.identity.cognitoIdentityId\",\"user\": \"$context.identity.user\"}"
 }
 
-variable "private_policy" {
-  default = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "AWS": "*"
-      },
-      "Action": "execute-api:Invoke",
-      "Resource": "*"
-    },
-    {
-            "Effect": "Deny",
-            "Principal": "*",
-            "Action": "execute-api:Invoke",
-            "Resource": [
-                "*"
-            ]
-        }
-  ]
-}
-EOF
-}
-
+# See https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-resource-policies.html for additional
+# information on how to configure resource policies.
+#
+# Example:
+# {
+#    "Version": "2012-10-17",
+#    "Statement": [
+#        {
+#            "Effect": "Allow",
+#            "Principal": "*",
+#            "Action": "execute-api:Invoke",
+#            "Resource": "arn:aws:execute-api:us-east-1:000000000000:*"
+#        },
+#        {
+#            "Effect": "Deny",
+#            "Principal": "*",
+#            "Action": "execute-api:Invoke",
+#            "Resource": "arn:aws:execute-api:region:account-id:*",
+#            "Condition": {
+#                "NotIpAddress": {
+#                    "aws:SourceIp": "123.4.5.6/24"
+#                }
+#            }
+#        }
+#    ]
+#}
 variable "rest_api_policy" {
   description = "The IAM policy document for the API."
   type        = string
@@ -145,26 +150,4 @@ variable "private_link_target_arns" {
   type        = list(string)
   description = "A list of target ARNs for VPC Private Link"
   default     = []
-}
-
-variable "create_keys" {
-  type = bool
-  default = false
-}
-
-variable "quota_settings" {
-  type = list(object({
-    limit = number
-    offset = number
-    period = number
-  }))
-  default = []
-}
-
-variable "throttle_settings" {
-  type = list(object({
-    burst_limit = number
-    rate_limit = number
-  }))
-  default = []
 }

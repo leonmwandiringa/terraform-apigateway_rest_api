@@ -15,18 +15,8 @@ output "created_date" {
 
 output "api_key" {
   description = "The the REST API key"
-  value       = join("", aws_api_gateway_api_key.default.*.value)
+  value       = aws_api_gateway_api_key.default.*.value
   sensitive = true
-}
-
-output "authorizer_id" {
-  description = "The the REST API authorizer ids"
-  value       = length(var.authorizers) > 0 ? aws_api_gateway_authorizer.default.*.id : null
-}
-
-output "authorizer_arn" {
-  description = "The the REST API authorizer arns"
-  value       = length(var.authorizers) > 0 ? aws_api_gateway_authorizer.default.*.arn : null
 }
 
 output "execution_arn" {
