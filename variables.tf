@@ -106,6 +106,18 @@ variable "xray_tracing_enabled" {
   default     = false
 }
 
+variable "gateway_authorizers" {
+  type = list(object({
+    name = string
+    type = string
+    provider_arns = list(string) # for cognito
+    identity_source = string # for lambda
+    authorizer_uri = string
+  }))
+  description = "gateway authorizer list"
+  default = null
+}
+
 # See https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-logging.html for additional information
 # on how to configure logging.
 variable "access_log_format" {
