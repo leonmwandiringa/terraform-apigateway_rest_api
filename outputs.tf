@@ -35,10 +35,10 @@ output "arn" {
 
 output "authorizer_id" {
   description = "The id of authorizer"
-  value       = var.gateway_authorizers != null ? aws_api_gateway_authorizer.default.*.id : null
+  value       = var.authorizers != null ? aws_api_gateway_authorizer.default.*.id : null
 }
 
 output "authorizer_arn" {
   description = "The arn of authorizer"
-  value       = var.gateway_authorizers != null ? aws_api_gateway_authorizer.default.*.arn : null
+  value       = var.authorizers != null ? aws_api_gateway_authorizer.default.*.arn : null
 }
